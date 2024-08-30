@@ -1,7 +1,10 @@
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.stem.snowball import EnglishStemmer
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords, wordnet
+from nltk.stem import WordNetLemmatizer
+from nltk import pos_tag
+import nltk
 
+nltk.data.path = ["../Lib"]
 
 class NLP:
     def __init__(self) -> None:
@@ -16,7 +19,10 @@ class NLP:
             WORD_TOKENS: list[str] = word_tokenize(sentence)
             
             self.WITHOUT_STOPWORDS: list[str] = self.filter_Stop_Words(WORD_TOKENS)
-            print(self.Stem_Words(self.WITHOUT_STOPWORDS))
+            self.POS_TAGS: list[tuple[str, str]] = self.Tag_part_of_speech(self.WITHOUT_STOPWORDS)
+            self.LEMMATIZED_WORDS = self.Lemmatize_Words(self.POS_TAGS)
+
+            print(self.LEMMATIZED_WORDS)
         
     def filter_Stop_Words(self, Word_tokens: list[str]) -> list[str]:
         self.STOP_WORDS: set = set(stopwords.words("english"))
@@ -25,12 +31,37 @@ class NLP:
 
         return self.result
     
-    def Stem_Words(self, words: list[str]) -> list:
-        self.ENGLISH_STEMMER: EnglishStemmer = EnglishStemmer()
+    def wordnet_pos(self, TAG: str):
+        if TAG.startswith('J'):
+            return wordnet.ADJ
+        
+        elif TAG.startswith('V'):
+            return wordnet.VERB
+        
+        elif TAG.startswith('N'):
+            return wordnet.NOUN
+        
+        elif TAG.startswith('R'):
+            return wordnet.ADV
+        
+        else:
+            return wordnet.NOUN
 
-        self.STEMMED_WORDS: list = [self.ENGLISH_STEMMER.stem(word) for word in words]
+    def Lemmatize_Words(self, POS: list[tuple[str, str]]) -> list:
+        self.LEMMATIZED_WORDS: list = []
 
-        return self.STEMMED_WORDS
+        for _, (self.WORD, self.POS) in enumerate(POS):
+            self.ENGLISH_LEMMATIZER: WordNetLemmatizer = WordNetLemmatizer()
+            
+            self.WORDNET_POS = self.wordnet_pos(self.POS)
+            self.LEMMATIZED_WORDS.append(self.ENGLISH_LEMMATIZER.lemmatize(self.WORD, self.WORDNET_POS))
+
+        return self.LEMMATIZED_WORDS
+
+    def Tag_part_of_speech(self, wordTokens: list[str]) -> list[tuple[str, str]]:
+        self.POS_TAGS: list[tuple[str, str]] = pos_tag(wordTokens)
+
+        return self.POS_TAGS
 
 
 if __name__ == "__main__":
