@@ -1,15 +1,25 @@
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
+from colorama import Fore, init
+from nltk import RegexpParser
 from nltk import pos_tag
 import nltk
 
+
+init(convert= True)
 nltk.data.path = ["../Lib"]
 
 class NLP:
     def __init__(self) -> None:
-        self.TEST_STORY: str = """When the tsunamis hit, most people were evacuated. Feeling the trickle of water rise to my chin, I let go of the prison bars in bitter resentment."""
+        self.TEST_STORY: str = """
+        In the dead of night, I whispered a question into my phone, but the voice that answered 
+        was not mine. The next morning, my search history showed queries I never asked ones only my 
+        darkest fears could know.
+        """
         
+        print(Fore.LIGHTGREEN_EX + "ORIGINAL : " + Fore.LIGHTCYAN_EX + self.TEST_STORY)
+
         self.tokenize(self.TEST_STORY)
 
     def tokenize(self, story: str) -> None:
@@ -21,8 +31,12 @@ class NLP:
             self.WITHOUT_STOPWORDS: list[str] = self.filter_Stop_Words(WORD_TOKENS)
             self.POS_TAGS: list[tuple[str, str]] = self.Tag_part_of_speech(self.WITHOUT_STOPWORDS)
             self.LEMMATIZED_WORDS = self.Lemmatize_Words(self.POS_TAGS)
+            self.Chunk(self.Tag_part_of_speech(self.LEMMATIZED_WORDS))
 
-            print(self.LEMMATIZED_WORDS)
+            print(Fore.LIGHTBLUE_EX + "POS : ", Fore.LIGHTCYAN_EX + f"{self.POS_TAGS}")
+
+            print(Fore.LIGHTGREEN_EX + "Lemmatization : " + Fore.LIGHTCYAN_EX + f"{self.LEMMATIZED_WORDS}")
+
         
     def filter_Stop_Words(self, Word_tokens: list[str]) -> list[str]:
         self.STOP_WORDS: set = set(stopwords.words("english"))
@@ -63,6 +77,12 @@ class NLP:
 
         return self.POS_TAGS
 
+    def Chunk(self, POS_TAGS: list[tuple[str, str]]):
+        self.CHUNK_PARSER: RegexpParser = RegexpParser("NP: {<NN+><MD>*<VB>}")
+        self.CHUNK_TREE = self.CHUNK_PARSER.parse(POS_TAGS)
+
+        print(self.CHUNK_TREE)
+        self.CHUNK_TREE.draw()
 
 if __name__ == "__main__":
     Natural_Language_Processor: NLP = NLP()
