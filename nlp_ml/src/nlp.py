@@ -14,7 +14,7 @@ class NLP:
         self.STORY: str = story
         self.STORY = self.normalize(self.STORY)
         
-        print(Fore.LIGHTGREEN_EX + "ORIGINAL : " + Fore.LIGHTCYAN_EX + self.TEST_STORY)
+        print(Fore.LIGHTGREEN_EX + "ORIGINAL : " + Fore.LIGHTCYAN_EX + self.STORY)
 
     def normalize(self, story: str) -> str:
         return story.lower().replace(',', '')
