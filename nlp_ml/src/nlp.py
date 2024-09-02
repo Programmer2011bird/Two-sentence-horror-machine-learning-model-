@@ -10,23 +10,17 @@ init(convert= True)
 nltk.data.path = ["../Lib"]
 
 class NLP:
-    def __init__(self) -> None:
-        self.TEST_STORY: str = """
-        In the dead of night, I whispered a question into my phone, but the voice that answered 
-        was not mine. The next morning, my search history showed queries I never asked ones only my 
-        darkest fears could know.
-        """
-        self.TEST_STORY = self.normalize(self.TEST_STORY)
+    def __init__(self, story: str) -> None:
+        self.STORY: str = story
+        self.STORY = self.normalize(self.STORY)
         
         print(Fore.LIGHTGREEN_EX + "ORIGINAL : " + Fore.LIGHTCYAN_EX + self.TEST_STORY)
-
-        self.tokenize(self.TEST_STORY)
 
     def normalize(self, story: str) -> str:
         return story.lower().replace(',', '')
 
-    def tokenize(self, story: str) -> None:
-        self.SENTENCE_TOKENS: list[str] = sent_tokenize(story)
+    def tokenize(self) -> list[str]:
+        self.SENTENCE_TOKENS: list[str] = sent_tokenize(self.STORY)
 
         for sentence in self.SENTENCE_TOKENS:
             WORD_TOKENS: list[str] = word_tokenize(sentence)
@@ -37,6 +31,8 @@ class NLP:
 
             print(Fore.LIGHTBLUE_EX + "POS : ", Fore.LIGHTCYAN_EX + f"{self.POS_TAGS}")
             print(Fore.LIGHTGREEN_EX + "Lemmatization : " + Fore.LIGHTCYAN_EX + f"{self.LEMMATIZED_WORDS}")
+
+            return self.LEMMATIZED_WORDS
         
     def filter_Stop_Words(self, Word_tokens: list[str]) -> list[str]:
         self.STOP_WORDS: set = set(stopwords.words("english"))
@@ -76,7 +72,3 @@ class NLP:
         self.POS_TAGS: list[tuple[str, str]] = pos_tag(wordTokens)
 
         return self.POS_TAGS
-
-
-if __name__ == "__main__":
-    Natural_Language_Processor: NLP = NLP()
