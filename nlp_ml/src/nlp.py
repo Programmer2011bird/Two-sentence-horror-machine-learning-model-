@@ -17,22 +17,19 @@ class NLP:
         print(Fore.LIGHTGREEN_EX + "ORIGINAL : " + Fore.LIGHTCYAN_EX + self.STORY)
 
     def normalize(self, story: str) -> str:
-        return story.lower().replace(',', '')
+        return story.lower().replace(',', '').replace(".", "")
 
     def tokenize(self) -> list[str]:
-        self.SENTENCE_TOKENS: list[str] = sent_tokenize(self.STORY)
-
-        for sentence in self.SENTENCE_TOKENS:
-            WORD_TOKENS: list[str] = word_tokenize(sentence)
+        WORD_TOKENS: list[str] = word_tokenize(self.STORY)
             
-            self.WITHOUT_STOPWORDS: list[str] = self.filter_Stop_Words(WORD_TOKENS)
-            self.POS_TAGS: list[tuple[str, str]] = self.Tag_part_of_speech(self.WITHOUT_STOPWORDS)
-            self.LEMMATIZED_WORDS: list[str] = self.Lemmatize_Words(self.POS_TAGS)
+        self.WITHOUT_STOPWORDS: list[str] = self.filter_Stop_Words(WORD_TOKENS)
+        self.POS_TAGS: list[tuple[str, str]] = self.Tag_part_of_speech(self.WITHOUT_STOPWORDS)
+        self.LEMMATIZED_WORDS: list[str] = self.Lemmatize_Words(self.POS_TAGS)
 
-            print(Fore.LIGHTBLUE_EX + "POS : ", Fore.LIGHTCYAN_EX + f"{self.POS_TAGS}")
-            print(Fore.LIGHTGREEN_EX + "Lemmatization : " + Fore.LIGHTCYAN_EX + f"{self.LEMMATIZED_WORDS}")
+        print(Fore.LIGHTBLUE_EX + "POS : ", Fore.LIGHTCYAN_EX + f"{self.POS_TAGS}")
+        print(Fore.LIGHTGREEN_EX + "Lemmatization : " + Fore.LIGHTCYAN_EX + f"{self.LEMMATIZED_WORDS}")
 
-            return self.LEMMATIZED_WORDS
+        return self.LEMMATIZED_WORDS
         
     def filter_Stop_Words(self, Word_tokens: list[str]) -> list[str]:
         self.STOP_WORDS: set = set(stopwords.words("english"))
