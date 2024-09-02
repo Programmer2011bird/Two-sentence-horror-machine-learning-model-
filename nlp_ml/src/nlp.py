@@ -1,9 +1,8 @@
 from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk import pos_tag
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
 from colorama import Fore, init
-from nltk import RegexpParser
-from nltk import pos_tag
 import nltk
 
 
@@ -17,10 +16,14 @@ class NLP:
         was not mine. The next morning, my search history showed queries I never asked ones only my 
         darkest fears could know.
         """
+        self.TEST_STORY = self.normalize(self.TEST_STORY)
         
         print(Fore.LIGHTGREEN_EX + "ORIGINAL : " + Fore.LIGHTCYAN_EX + self.TEST_STORY)
 
         self.tokenize(self.TEST_STORY)
+
+    def normalize(self, story: str) -> str:
+        return story.lower().replace(',', '')
 
     def tokenize(self, story: str) -> None:
         self.SENTENCE_TOKENS: list[str] = sent_tokenize(story)
@@ -30,13 +33,10 @@ class NLP:
             
             self.WITHOUT_STOPWORDS: list[str] = self.filter_Stop_Words(WORD_TOKENS)
             self.POS_TAGS: list[tuple[str, str]] = self.Tag_part_of_speech(self.WITHOUT_STOPWORDS)
-            self.LEMMATIZED_WORDS = self.Lemmatize_Words(self.POS_TAGS)
-            self.Chunk(self.Tag_part_of_speech(self.LEMMATIZED_WORDS))
+            self.LEMMATIZED_WORDS: list[str] = self.Lemmatize_Words(self.POS_TAGS)
 
             print(Fore.LIGHTBLUE_EX + "POS : ", Fore.LIGHTCYAN_EX + f"{self.POS_TAGS}")
-
             print(Fore.LIGHTGREEN_EX + "Lemmatization : " + Fore.LIGHTCYAN_EX + f"{self.LEMMATIZED_WORDS}")
-
         
     def filter_Stop_Words(self, Word_tokens: list[str]) -> list[str]:
         self.STOP_WORDS: set = set(stopwords.words("english"))
@@ -45,7 +45,7 @@ class NLP:
 
         return self.result
     
-    def wordnet_pos(self, TAG: str):
+    def wordnet_pos(self, TAG: str) -> str:
         if TAG.startswith('J'):
             return wordnet.ADJ
         
@@ -61,13 +61,13 @@ class NLP:
         else:
             return wordnet.NOUN
 
-    def Lemmatize_Words(self, POS: list[tuple[str, str]]) -> list:
-        self.LEMMATIZED_WORDS: list = []
+    def Lemmatize_Words(self, POS: list[tuple[str, str]]) -> list[str]:
+        self.LEMMATIZED_WORDS: list[str] = []
 
         for _, (self.WORD, self.POS) in enumerate(POS):
             self.ENGLISH_LEMMATIZER: WordNetLemmatizer = WordNetLemmatizer()
             
-            self.WORDNET_POS = self.wordnet_pos(self.POS)
+            self.WORDNET_POS: str = self.wordnet_pos(self.POS)
             self.LEMMATIZED_WORDS.append(self.ENGLISH_LEMMATIZER.lemmatize(self.WORD, self.WORDNET_POS))
 
         return self.LEMMATIZED_WORDS
@@ -77,12 +77,6 @@ class NLP:
 
         return self.POS_TAGS
 
-    def Chunk(self, POS_TAGS: list[tuple[str, str]]):
-        self.CHUNK_PARSER: RegexpParser = RegexpParser("NP: {<NN+><MD>*<VB>}")
-        self.CHUNK_TREE = self.CHUNK_PARSER.parse(POS_TAGS)
-
-        print(self.CHUNK_TREE)
-        self.CHUNK_TREE.draw()
 
 if __name__ == "__main__":
     Natural_Language_Processor: NLP = NLP()
