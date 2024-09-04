@@ -18,12 +18,13 @@ class DataBase:
 
         self.get_Stories()
 
-    def get_Stories(self):
-        self.CURSOR.execute("SELECT * FROM two_sentence_horror.stories_INFO;")
+    def get_Stories(self, func= None) -> None:
+        self.CURSOR.execute("SELECT first_sentence, second_sentence FROM two_sentence_horror.stories_INFO;")
+        
+        for story_info in self.CURSOR.fetchall():
+            self.FIRST_SENTENCE: str = str(story_info[0])
+            self.SECOND_SENTENCE: str = str(story_info[1])
 
-        print(self.CURSOR.fetchone())
-
-
-if __name__ == "__main__":
-    DB = DataBase()
+            if func != None:
+                func(self.FIRST_SENTENCE, self.SECOND_SENTENCE)
 
