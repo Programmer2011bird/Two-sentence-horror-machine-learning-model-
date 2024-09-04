@@ -3,14 +3,15 @@ import gensim
 import nlp
 
 
-test_story: str = """
-Word2Vec is a popular technique for natural language processing. It creates word embeddings for text."""
+def embed_story(story: str):
+    Natural_Language_Processor: nlp.NLP = nlp.NLP(story)
+    processed = Natural_Language_Processor.tokenize()
 
-Natural_Language_Processor: nlp.NLP = nlp.NLP(test_story)
-processed = Natural_Language_Processor.tokenize()
+    print(processed)
+    model = Word2Vec(sentences= processed, window=5, min_count=0)
+    
+    for index in range(len(model.wv)):
+        print(model.wv[index])
 
-print(processed)
-model = Word2Vec(sentences= processed, window=555, min_count=1)
-
-print(model.wv.most_similar("word", topn=555))
+    model.save("word2vec.model")
 
