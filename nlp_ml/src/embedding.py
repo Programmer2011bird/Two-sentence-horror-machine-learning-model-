@@ -15,3 +15,9 @@ def embed_story(story: str):
 
     model.save("word2vec.model")
 
+def load_model(file):
+    model = Word2Vec.load(file)
+
+    for index in range(len(model.wv)):
+        print(model.wv[index])
+
