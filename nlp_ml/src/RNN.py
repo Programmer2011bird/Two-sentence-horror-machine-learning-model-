@@ -26,11 +26,10 @@ class LinearRegressionModel(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         
-        self.WEIGHTS: nn.Parameter = nn.Parameter(torch.randn(1, dtype=torch.float))
-        self.BIAS: nn.Parameter = nn.Parameter(torch.randn(1, dtype=torch.float))
+        self.LINEAR_LAYER = nn.Linear(1, 1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.WEIGHTS * x + self.BIAS
+        return self.LINEAR_LAYER(x)
 
 def plot_Predictions(Predictions=None) -> None:
     plt.scatter(X_train, y_train, label="Training Data")
@@ -118,7 +117,7 @@ def main() -> None:
     plt.legend()
     plt.show()
 
-    save_model(model)
+    # save_model(model)
 
 if __name__ == "__main__":
     main()
