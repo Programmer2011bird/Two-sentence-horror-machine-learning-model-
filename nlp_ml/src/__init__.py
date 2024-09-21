@@ -2,8 +2,7 @@ import embedding
 import DB
 
 
-def embed(first_sentence, second_sentence):
-    full_story: str = "".join([first_sentence, second_sentence])
+def embed(full_story):
     embedding.embed_story(full_story)
 
 def load():
@@ -13,7 +12,7 @@ def main():
     DATABASE: DB.DataBase = DB.DataBase()
     DATABASE.get_Stories(embed)
 
-    load() # load after embedding and saving information to the .model file
+    # load() # load after embedding and saving information to the .model file
 
 if __name__ == "__main__":
     main()

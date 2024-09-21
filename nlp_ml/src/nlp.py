@@ -5,7 +5,6 @@ from nltk.stem import WordNetLemmatizer
 from colorama import Fore, init
 import nltk
 
-
 init(convert= True)
 nltk.data.path = ["../Lib"]
 
