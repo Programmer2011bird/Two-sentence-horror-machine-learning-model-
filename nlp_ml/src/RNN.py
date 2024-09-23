@@ -1,40 +1,38 @@
-import torch.nn as nn
-import torch
-import gensim
+from torch.utils.data import Dataset, DataLoader
+from torch.nn.utils.rnn import pad_sequence
 import embedding
+import torch
 
-class model(nn.Module):
-    def __init__(self) -> None:
-        super().__init__()
 
-        print("looped")
+word2vec_model = embedding.load_model("two_sentence_horror.model")
+embedding_matrix = torch.Tensor(word2vec_model.wv.vectors)
+vocab_size = len(word2vec_model.wv.index_to_key)
 
-        self.RNN = nn.RNN(10, 20, 2, batch_first=True)
-        self.FC = nn.Linear(20, 5)
+word2idx = {word: idx for idx, word in enumerate(word2vec_model.wv.index_to_key)}
+idx2word = {idx: word for word, idx in word2idx.items()}
 
-    def forward(self, x) -> None:
-        output, hidden_layer = self.RNN(x)
-        # print("HIDDEN LAYERS : ", hidden_layer)
-        # print("UNSHAPED OUTPUT : ", output)
-        ShapedOutput = self.FC(output)
+stories = [
+    "She heard a noise. It was getting closer.",
+    "I woke up and saw my reflection. It wasn't me.",
+    "I turned off the lights. But they turned back on."
+]
 
-        return ShapedOutput
+def story_to_word_indices(story: str) -> torch.Tensor:
+    return torch.tensor([word2idx[word] for word in story.split() if word in word2idx])
 
-# RNN_model = model()
-# x = torch.randn(3, 10, 10)
-#
-# output = RNN_model(x)
+def collate_fn(batch):
+    return pad_sequence(batch, batch_first=True)[:, :-1], pad_sequence(batch, batch_first=True)[:, 1:]
 
-gensim_model = embedding.load_model("two_sentence_horror.model")
+class StoryDataset(Dataset):
+    def __init__(self, story_tensors):
+        self.story_tensors = story_tensors
 
-vocab_size = len(gensim_model.wv.index_to_key)  # Number of words in the vocabulary
-embedding_dim = gensim_model.vector_size        # Embedding size (usually 100, 200, etc.)
-print(vocab_size)
-# Create a matrix of size (vocab_size, embedding_dim) to store the word vectors
-embedding_matrix = torch.zeros((vocab_size, embedding_dim))
+    def __len__(self):
+        return len(self.story_tensors)
 
-# Populate the embedding matrix with word vectors from Gensim
-for i, word in enumerate(gensim_model.wv.index_to_key):
-    embedding_matrix[i] = torch.tensor(gensim_model.wv[word])
+    def __getitem__(self, idx):
+        return self.story_tensors[idx]
 
-print(embedding_matrix)
+story_tensors = [story_to_word_indices(story) for story in stories]
+train_loader = DataLoader(StoryDataset(story_tensors), batch_size=1, collate_fn=collate_fn, shuffle=True)
+
